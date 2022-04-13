@@ -5,6 +5,8 @@ using Prism.Ioc;
 using SwissTransport.Core;
 using SwissTransportGUI.Services;
 using SwissTransportGUI.Services.Interfaces;
+using SwissTransportGUI.ViewModels;
+using SwissTransportGUI.Views;
 
 namespace SwissTransportGUI
 {
@@ -22,6 +24,7 @@ namespace SwissTransportGUI
         {
             containerRegistry.Register<ITransport, Transport>();
             containerRegistry.Register<IStationAutoComplete, StationAutoComplete>();
+            containerRegistry.RegisterDialog<DialogView, DialogViewModel>("ApplicationDialog");
         }
     }
 }

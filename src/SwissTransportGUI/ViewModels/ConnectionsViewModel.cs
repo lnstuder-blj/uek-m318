@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using Prism.Commands;
 using Prism.Mvvm;
+using Prism.Services.Dialogs;
 using SwissTransport.Core;
 using SwissTransport.Models;
 using SwissTransportGUI.Services.Interfaces;
@@ -57,6 +58,20 @@ namespace SwissTransportGUI.ViewModels
             set => SetProperty(ref _selectedArrivalStation, value);
         }
 
+        private bool _applyDateFilter;
+        public bool ApplyDateFilter
+        {
+            get => _applyDateFilter;
+            set => SetProperty(ref _applyDateFilter, value);
+        }
+
+        private DateTime? _selectedDepartureDate;
+        public DateTime? SelectedDepartureDate
+        {
+            get => _selectedDepartureDate;
+            set => SetProperty(ref _selectedDepartureDate, value);
+        }
+        
         public ObservableCollection<Connection> ConnectionsList { get; }
         public ObservableCollection<Station> DepartureStationSearchResult { get; }
         public ObservableCollection<Station> ArrivalStationSearchResult { get; }
@@ -65,11 +80,13 @@ namespace SwissTransportGUI.ViewModels
 
         private ITransport _swissTransport;
         private IStationAutoComplete _stationAutoComplete;
+        private IDialogService _dialogService;
 
-        public ConnectionsViewModel(ITransport swissTransport, IStationAutoComplete stationAutoComplete)
+        public ConnectionsViewModel(ITransport swissTransport, IStationAutoComplete stationAutoComplete, IDialogService dialogService)
         {
             _swissTransport = swissTransport;
             _stationAutoComplete = stationAutoComplete;
+            _dialogService = dialogService;
 
             SearchConnectionsCommand = new DelegateCommand(OnSearchConnections);
 
@@ -114,13 +131,20 @@ namespace SwissTransportGUI.ViewModels
 
             ArrivalStationsDropDownIsOpen = true;
         }
-
+        
         private void OnSearchConnections()
         {
-            if (SelectedArrivalStation == null || SelectedDepartureStation == null) return;
+            if (SelectedArrivalStation == null 
+                || SelectedDepartureStation == null 
+                || SelectedDepartureDate == null) return;
+
+            DateTime departureDate = SelectedDepartureDate.HasValue && ApplyDateFilter 
+                ? SelectedDepartureDate.Value : DateTime.Now;
+
             List<Connection> connections = _swissTransport
-                .GetConnections(SelectedDepartureStation.Name, SelectedArrivalStation.Name).ConnectionList.Take(10)
+                .GetConnections(SelectedDepartureStation.Name, SelectedArrivalStation.Name, departureDate).ConnectionList.Take(10)
                 .ToList();
+
             ConnectionsList.AddRange(connections);
         }
     }

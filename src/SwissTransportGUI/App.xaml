@@ -10,6 +10,7 @@
                 <ResourceDictionary Source="Resources/Styles/ButtonStyle.xaml" />
                 <ResourceDictionary Source="Resources/Styles/LabelStyle.xaml" />
                 <ResourceDictionary Source="Resources/Styles/DataGridStyle.xaml" />
+                <ResourceDictionary Source="Resources/Styles/DialogStyle.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>
