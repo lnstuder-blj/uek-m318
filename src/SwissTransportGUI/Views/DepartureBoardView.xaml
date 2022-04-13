@@ -18,19 +18,28 @@
             <RowDefinition Height="4*" />
         </Grid.RowDefinitions>
 
-        <StackPanel Orientation="Horizontal" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"  Margin="10" Background="{StaticResource SecondaryColor}">
-            <Label Content="Departure Station" 
-                   VerticalAlignment="Center" 
+        <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch"  Margin="10" Background="{StaticResource SecondaryColor}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="3*"/>
+            </Grid.ColumnDefinitions>
+
+            <Label Content="From" 
+                   VerticalAlignment="Center"
+                   HorizontalAlignment="Right"
                    Margin="0,0,10,0" Style="{StaticResource LargeText}"/>
 
-            <ComboBox Text="{Binding Path=StationNameInput}" 
+            <ComboBox Grid.Column="1" Name="StationSearchInputBox" 
+                      Text="{Binding Path=StationNameInput}" 
                       Width="200px" 
                       Height="30px" 
                       VerticalContentAlignment="Center"
                       IsEditable="True"
+                      IsTextSearchEnabled="True"
                       HorizontalAlignment="Left" 
-                      AllowDrop="False"
-                      IsDropDownOpen="{Binding ShowStationsDropDown}"
+                      TabIndex="1"
+                      IsDropDownOpen="{Binding Path=StationsDropDownIsOpen}"
                       ItemsSource="{Binding Path=StationSearchResult}"
                       SelectedItem="{Binding Path=SelectedStation}">
                 <ComboBox.ItemTemplate>
@@ -42,18 +51,20 @@
                 </ComboBox.ItemTemplate>
                 <b:Interaction.Triggers>
                     <b:EventTrigger EventName="SelectionChanged">
-                        <b:InvokeCommandAction Command="{Binding Path=FindDeparturesCommand}" />
+                        <b:InvokeCommandAction Command="{Binding Path=SelectionChangedCommand}"></b:InvokeCommandAction>
                     </b:EventTrigger>
                 </b:Interaction.Triggers>
             </ComboBox>
 
-            <Button Content="Search stations" 
+            <Button Grid.Column="2" Content="Show departures" 
                     Style="{StaticResource RedButton}" 
                     Height="30" 
                     VerticalAlignment="Center"
+                    HorizontalAlignment="Left"
                     Margin="10,0,0,0"
-                    Command="{Binding Path=SearchStationsCommand}" />
-        </StackPanel>
+                    TabIndex="2"
+                    Command="{Binding Path=ShowDeparturesCommand}" />
+        </Grid>
 
         <DataGrid Grid.Row="1" ItemsSource="{Binding DeparturesList}" IsReadOnly="True" Margin="10" />
     </Grid>

@@ -24,6 +24,7 @@ namespace SwissTransportGUI.Views
         public DepartureBoardView()
         {
             InitializeComponent();
+            this.StationSearchInputBox.Focus();
         }
     }
 }
