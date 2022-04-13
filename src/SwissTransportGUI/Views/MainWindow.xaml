@@ -9,11 +9,11 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid Background="{StaticResource PrimaryColor}">
-        <TabControl>
-            <TabItem Header="Departures">
+        <TabControl TabIndex="0">
+            <TabItem TabIndex="0" Header="Departures">
                 <Frame Source="DepartureBoardView.xaml" />
             </TabItem>
-            <TabItem Header="Connections">
+            <TabItem TabIndex="0" Header="Connections">
                 <Frame Source="ConnectionsView.xaml" />
             </TabItem>
         </TabControl>
