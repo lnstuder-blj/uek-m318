@@ -12,15 +12,16 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using SwissTransportGUI.ViewModels;
 
-namespace SwissTransportGUI
+namespace SwissTransportGUI.Views
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaktionslogik für DepartureBoardView.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class DepartureBoardView : Page
     {
-        public MainWindow()
+        public DepartureBoardView()
         {
             InitializeComponent();
         }

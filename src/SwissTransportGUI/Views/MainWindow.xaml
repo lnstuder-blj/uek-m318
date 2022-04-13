@@ -3,10 +3,19 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:prism="http://prismlibrary.com/"
+        prism:ViewModelLocator.AutoWireViewModel="True"
         xmlns:local="clr-namespace:SwissTransportGUI"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
-    <Grid>
-
+    <Grid Background="{StaticResource PrimaryColor}">
+        <TabControl>
+            <TabItem Header="Departures">
+                <Frame Source="DepartureBoardView.xaml" />
+            </TabItem>
+            <TabItem Header="Connections">
+                <Frame Source="ConnectionsView.xaml" />
+            </TabItem>
+        </TabControl>
     </Grid>
 </Window>
