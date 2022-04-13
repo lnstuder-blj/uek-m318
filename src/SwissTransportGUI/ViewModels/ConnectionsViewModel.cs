@@ -9,6 +9,7 @@ using Prism.Commands;
 using Prism.Mvvm;
 using SwissTransport.Core;
 using SwissTransport.Models;
+using SwissTransportGUI.Services.Interfaces;
 
 namespace SwissTransportGUI.ViewModels
 {
@@ -28,25 +29,48 @@ namespace SwissTransportGUI.ViewModels
             set => SetProperty(ref _arrivalStationNameInput, value, OnArrivalStationNameInputChanged);
         }
 
+        private bool _departureStationsDropDownIsOpen;
+        public bool DepartureStationsDropDownIsOpen
+        {
+            get => _departureStationsDropDownIsOpen;
+            set => SetProperty(ref _departureStationsDropDownIsOpen, value);
+        }
+
+        private bool _arrivalStationsDropDownIsOpen;
+        public bool ArrivalStationsDropDownIsOpen
+        {
+            get => _arrivalStationsDropDownIsOpen;
+            set => SetProperty(ref _arrivalStationsDropDownIsOpen, value);
+        }
+
+        private Station? _selectedDepartureStation;
+        public Station? SelectedDepartureStation
+        {
+            get => _selectedDepartureStation;
+            set => SetProperty(ref _selectedDepartureStation, value);
+        }
+
+        private Station? _selectedArrivalStation;
+        public Station? SelectedArrivalStation
+        {
+            get => _selectedArrivalStation;
+            set => SetProperty(ref _selectedArrivalStation, value);
+        }
+
         public ObservableCollection<Connection> ConnectionsList { get; }
         public ObservableCollection<Station> DepartureStationSearchResult { get; }
         public ObservableCollection<Station> ArrivalStationSearchResult { get; }
 
-        public Station? SelectedDepartureStation { get; set; }
-        public Station? SelectedArrivalStation { get; set; }
-
-        public ICommand SearchDepartureStationCommand { get; }
-        public ICommand SearchArrivalStationCommand { get; }
         public ICommand SearchConnectionsCommand { get; }
 
         private ITransport _swissTransport;
+        private IStationAutoComplete _stationAutoComplete;
 
-        public ConnectionsViewModel(ITransport swissTransport)
+        public ConnectionsViewModel(ITransport swissTransport, IStationAutoComplete stationAutoComplete)
         {
             _swissTransport = swissTransport;
+            _stationAutoComplete = stationAutoComplete;
 
-            SearchDepartureStationCommand = new DelegateCommand(OnSearchDepartureStation);
-            SearchArrivalStationCommand = new DelegateCommand(OnSearchArrivalStation);
             SearchConnectionsCommand = new DelegateCommand(OnSearchConnections);
 
             ConnectionsList = new ObservableCollection<Connection>();
@@ -59,14 +83,37 @@ namespace SwissTransportGUI.ViewModels
 
         private void OnDepartureStationNameInputChanged()
         {
+            if (DepartureStationNameInput == SelectedDepartureStation?.Name) return;
 
+            DepartureStationSearchResult.Clear();
+
+            List<Station>? suggestions = _stationAutoComplete.GetSuggestions(DepartureStationNameInput);
+            if (suggestions == null) return;
+
+            List<Station> filteredSuggestions = _stationAutoComplete
+                .PopulateSuggestions(DepartureStationSearchResult.ToList(), ref suggestions).ToList();
+
+            DepartureStationSearchResult.AddRange(filteredSuggestions);
+
+            DepartureStationsDropDownIsOpen = true;
         }
 
         private void OnArrivalStationNameInputChanged()
         {
+            if (ArrivalStationNameInput == SelectedArrivalStation?.Name) return;
 
+            ArrivalStationSearchResult.Clear();
+
+            List<Station>? suggestions = _stationAutoComplete.GetSuggestions(ArrivalStationNameInput);
+            if (suggestions == null) return;
+
+            List<Station> filteredSuggestions = _stationAutoComplete
+                .PopulateSuggestions(ArrivalStationSearchResult.ToList(), ref suggestions).ToList();
+
+            ArrivalStationSearchResult.AddRange(filteredSuggestions);
+
+            ArrivalStationsDropDownIsOpen = true;
         }
-
 
         private void OnSearchConnections()
         {
@@ -75,20 +122,6 @@ namespace SwissTransportGUI.ViewModels
                 .GetConnections(SelectedDepartureStation.Name, SelectedArrivalStation.Name).ConnectionList.Take(10)
                 .ToList();
             ConnectionsList.AddRange(connections);
-        }
-
-        private void OnSearchArrivalStation()
-        {
-            ArrivalStationSearchResult.Clear();
-            List<Station> stationsFound = _swissTransport.GetStations(ArrivalStationNameInput).StationList;
-            stationsFound.ForEach(station => ArrivalStationSearchResult.Add(station));
-        }
-
-        private void OnSearchDepartureStation()
-        {
-            DepartureStationSearchResult.Clear();
-            List<Station> stationsFound = _swissTransport.GetStations(DepartureStationNameInput).StationList;
-            stationsFound.ForEach(station => DepartureStationSearchResult.Add(station));
         }
     }
 }
