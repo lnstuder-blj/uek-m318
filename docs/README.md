@@ -1,10 +1,16 @@
 # Dokumentation
 
-- [Dokumentation](#dokumentation)
-  - [User Stories](#user-stories)
-  - [Mockups](#mockups)
-    - [Abfahrtstafel](#abfahrtstafel)
-    - [Verbindungssuche](#verbindungssuche)
+> Lian Studer, 13.03.2022
+
+## Inhaltsverzeichnis
+
+[TOC]
+
+## Einleitung (Management Summary)
+
+## Zweck des Dokuments
+
+Dieses Dokument soll den Entwicklungsprozess der Projektarbeit dokumentieren. Es soll den Funktionsumfang in Form von User Stories mit unterschiedlicher Priorität und Mockups aufzeigen und mit den dazugehörigen Abnahmekriterien eingie Implementationsdetails explizit beschreiben. Ausserdem werden in dieser Dokumentation sämtliche Testfälle notiert sowie das Testprotokoll geführt. Auch Informationen zum fertigen Produkt soll der Leser herausnehmen können, wie beispielsweise bekannte Fehler/Bugs, oder fehlende Funktionalität und ander interessante Informationen. Zusätzlich ist eine Installationsanleitung enthalten.
 
 ## User Stories
 
@@ -20,23 +26,37 @@
 | **8** | **Verbindung teilen**<br />Als Benutzer möchte ich eine Verbindung per Email teilen können, um andere über eine Verbindung informieren zu können. | - Verbindung auswählen<br />- Textfeld für Empfänger-Email Adresse<br />- Textfeld für optionale Nachricht<br />- Uhrzeit, Start- und Endstation der Verbindung an Empfänger senden | 3           |
 | **9** | **Take Me Home**<br />Als Benutzer möchte ich einen "Take Me Home" Shortcut haben können, um mir die schnellste Verbindung von meinem aktuellen Standort zu meiner Heimadresse zu geben. | - Einstellung für Heimadresse<br />- Standort erfassen<br />- Nächste Startstation zum aktuellen Standort finden<br />- Nächste Endstation zu Heimadresse finden<br /> | Eigene Idee |
 
-
+### Aktivitätsdiagramm
 
 ## Mockups
 
 ### Abfahrtstafel
 
-> User Story 2
+> User Story 2: Abfahrtstafel
 
 ![Abfahrtstafel](assets/Mockup_UserStory2.png)
 
 ### Verbindungssuche
 
-> User Story 1
+> User Story 1: Verbindungssuche
 
 ![Verbindungssuche](assets/Mockup_UserStory1.png)
 
 
 
+## Tests
 
+### Testfälle
+
+### Testprotokoll
+
+## Installationseinleitung
+
+## Details
+
+### Fehlende Funktionen
+
+### Bekannte Fehler/Bugs
+
+### Weitere Informationen
 
