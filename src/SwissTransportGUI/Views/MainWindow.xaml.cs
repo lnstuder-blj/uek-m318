@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using SwissTransportGUI.ViewModels;
 
-namespace SwissTransportGUI
+namespace SwissTransportGUI.Views
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -11,7 +11,6 @@ namespace SwissTransportGUI
         public MainWindow()
         {
             InitializeComponent();
-            this.DataContext = new MainWindowViewModel();
         }
     }
 }
