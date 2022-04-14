@@ -30,7 +30,30 @@
                    HorizontalAlignment="Right"
                    Margin="0,0,10,0" Style="{StaticResource LargeText}"/>
 
-            <ComboBox Grid.Column="1" Name="StationSearchInputBox" 
+            <StackPanel Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Stretch">
+                <TextBox
+                    Text="{Binding Path=StationNameSearchInput, UpdateSourceTrigger=PropertyChanged}" 
+                    Height="30" VerticalContentAlignment="Center" TextWrapping="NoWrap" MaxLines="1">
+                </TextBox>
+                <Popup 
+                    Placement="Bottom"
+                    Height="Auto"
+                    IsOpen="{Binding Path=SuggestionsListIsVisible}"
+                    >
+                    <ListBox
+                        VerticalAlignment="Bottom"
+                        ItemsSource="{Binding Path=StationSuggestions}" 
+                        SelectedItem="{Binding Path=SelectedStation, UpdateSourceTrigger=PropertyChanged}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate DataType="models:Station">
+                                <Label Content="{Binding Name}"/>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </Popup>
+            </StackPanel>
+
+            <!--<ComboBox Grid.Column="1" Name="StationSearchInputBox" 
                       Text="{Binding Path=StationNameInput}" 
                       Width="200px" 
                       Height="30px" 
@@ -54,7 +77,7 @@
                         <b:InvokeCommandAction Command="{Binding Path=SelectionChangedCommand}"></b:InvokeCommandAction>
                     </b:EventTrigger>
                 </b:Interaction.Triggers>
-            </ComboBox>
+            </ComboBox>-->
 
             <Button Grid.Column="2" Content="Show departures" 
                     Style="{StaticResource RedButton}" 
@@ -66,6 +89,21 @@
                     Command="{Binding Path=ShowDeparturesCommand}" />
         </Grid>
 
-        <DataGrid Grid.Row="1" ItemsSource="{Binding DeparturesList}" IsReadOnly="True" Margin="10" />
+        <DataGrid Grid.Row="1" ItemsSource="{Binding DeparturesList}" AutoGenerateColumns="False" IsReadOnly="True" Margin="10">
+            <DataGrid.Columns>
+                <DataGridTemplateColumn Header="Train">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding Path=Category}" Margin="3,0,0,0" />
+                                <TextBlock Text="{Binding Path=Number}"></TextBlock>
+                            </StackPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTextColumn Header="To" Binding="{Binding Path=To}" />
+                <DataGridTextColumn Header="Departure" Binding="{Binding Path=Stop.Departure}" />
+            </DataGrid.Columns>
+        </DataGrid>
     </Grid>
 </Page>

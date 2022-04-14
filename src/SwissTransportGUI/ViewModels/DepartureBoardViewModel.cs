@@ -6,6 +6,8 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using Microsoft.Xaml.Behaviors.Core;
 using Prism.Commands;
@@ -19,27 +21,29 @@ namespace SwissTransportGUI.ViewModels
 {
     internal class DepartureBoardViewModel : BindableBase
     {
-        public ObservableCollection<Station> StationSearchResult { get; private set; }
-        public ObservableCollection<StationBoard> DeparturesList { get; private set; }
+        public ObservableCollection<Station> StationSuggestions { get; }
+        
+        public ObservableCollection<StationBoard> DeparturesList { get; }
 
-        private string _stationNameInput;
-        public string StationNameInput
+        private string _stationNameSearchInput;
+        public string StationNameSearchInput
         {
-            get => _stationNameInput;
-            set => SetProperty(ref _stationNameInput, value, OnStationNameInputChanged);
+            get => _stationNameSearchInput;
+            set => SetProperty(ref _stationNameSearchInput, 
+                value, OnStationNameInputChanged);
         }
 
-        private bool _stationsDropDownIsOpen;
-        public bool StationsDropDownIsOpen
+        private bool _suggestionsListIsVisible;
+        public bool SuggestionsListIsVisible
         {
-            get => _stationsDropDownIsOpen;
-            set => SetProperty(ref _stationsDropDownIsOpen, value);
+            get => _suggestionsListIsVisible;
+            set => SetProperty(ref _suggestionsListIsVisible, value);
         }
 
         private bool _searchButtonIsEnabled;
         public bool SearchButtonIsEnabled
         {
-            get => _searchButtonIsEnabled; 
+            get => _searchButtonIsEnabled;
             set => SetProperty(ref _searchButtonIsEnabled, value);
         }
 
@@ -47,11 +51,13 @@ namespace SwissTransportGUI.ViewModels
         public Station? SelectedStation
         {
             get => _selectedStation;
-            set => SetProperty(ref _selectedStation, value);
+            set => SetProperty(ref _selectedStation, 
+                value, OnSelectedStationChanged);
         }
 
         public ICommand ShowDeparturesCommand { get; }
-        public ICommand SelectionChangedCommand { get; }
+        public ICommand SelectedStationChanged { get; }
+        public ICommand StationNameInputChanged { get; }
 
         private readonly ITransport _swissTransport;
         private readonly IStationAutoComplete _stationAutoComplete;
@@ -61,31 +67,33 @@ namespace SwissTransportGUI.ViewModels
             _swissTransport = swissTransport;
             _stationAutoComplete = stationAutoComplete;
 
-            StationSearchResult = new ObservableCollection<Station>();
-            StationNameInput = string.Empty;
+            StationSuggestions = new ObservableCollection<Station>();
+            StationNameSearchInput = string.Empty;
             DeparturesList = new ObservableCollection<StationBoard>();
             SearchButtonIsEnabled = false;
-            StationsDropDownIsOpen = false;
+            SuggestionsListIsVisible = true;
 
             ShowDeparturesCommand = new DelegateCommand(OnShowDepartures);
-            SelectionChangedCommand = new DelegateCommand(OnSelectedStationChanged);
+            SelectedStationChanged = new DelegateCommand(OnSelectedStationChanged);
+            StationNameInputChanged = new DelegateCommand(OnStationNameInputChanged);
         }
 
         private void OnStationNameInputChanged()
         {
-            if (StationNameInput == SelectedStation?.Name) return;
 
-            StationSearchResult.Clear();
+            if (StationNameSearchInput == SelectedStation?.Name) return;
 
-            List<Station>? suggestions = _stationAutoComplete.GetSuggestions(StationNameInput);
+            StationSuggestions.Clear();
+
+            List<Station>? suggestions = _stationAutoComplete.GetSuggestions(StationNameSearchInput);
             if (suggestions == null) return;
 
             List<Station> filteredSuggestions = _stationAutoComplete
-                .PopulateSuggestions(StationSearchResult.ToList(), ref suggestions).ToList();
+                .PopulateSuggestions(StationSuggestions.ToList(), ref suggestions).ToList();
 
-            StationSearchResult.AddRange(filteredSuggestions);
+            StationSuggestions.AddRange(filteredSuggestions);
 
-            StationsDropDownIsOpen = true;
+            SuggestionsListIsVisible = true;
         }
 
         private void OnSelectedStationChanged()
@@ -93,7 +101,8 @@ namespace SwissTransportGUI.ViewModels
             if (SelectedStation != null)
             {
                 SearchButtonIsEnabled = true;
-                StationsDropDownIsOpen = false;
+                SuggestionsListIsVisible = false;
+                StationNameSearchInput = SelectedStation.Name;
             }
         }
 
