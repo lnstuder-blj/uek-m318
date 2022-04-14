@@ -34,56 +34,64 @@
                        HorizontalAlignment="Right"
                        Margin="0,0,10,0" Style="{StaticResource LargeText}"/>
 
-                <ComboBox Grid.Row="0" Grid.Column="1" Text="{Binding Path=DepartureStationNameInput}" 
-                          Width="200px" 
-                          Height="30px" 
-                          VerticalContentAlignment="Center"
-                          IsEditable="True"
-                          HorizontalAlignment="Left" 
-                          IsTextSearchEnabled="True"
-                          IsDropDownOpen="{Binding Path=DepartureStationsDropDownIsOpen}"
-                          ItemsSource="{Binding Path=DepartureStationSearchResult}"
-                          SelectedItem="{Binding Path=SelectedDepartureStation}">
-                    <ComboBox.ItemTemplate>
-                        <DataTemplate DataType="models:Station">
-                            <ComboBoxItem>
-                                <Label Content="{Binding Name}"></Label>
-                            </ComboBoxItem>
-                        </DataTemplate>
-                    </ComboBox.ItemTemplate>
-                </ComboBox>
+            <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Stretch">
+                <TextBox
+                    Text="{Binding Path=DepartureStationNameSearchInput, UpdateSourceTrigger=PropertyChanged}" 
+                    Height="30" VerticalContentAlignment="Center" TextWrapping="NoWrap" MaxLines="1">
+                </TextBox>
+                <Popup 
+                    Placement="Bottom"
+                    Height="Auto"
+                    IsOpen="{Binding Path=DepartureSuggestionsListIsVisible}"
+                >
+                    <ListBox
+                        VerticalAlignment="Bottom"
+                        ItemsSource="{Binding Path=DepartureStationSuggestions}" 
+                        SelectedItem="{Binding Path=SelectedDepartureStation, UpdateSourceTrigger=PropertyChanged}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate DataType="models:Station">
+                                <Label Content="{Binding Name}"/>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </Popup>
+            </StackPanel>
 
-                <Label Grid.Row="1" Grid.Column="0" Content="To" 
+            <Label Grid.Row="1" Grid.Column="0" Content="To" 
                        VerticalAlignment="Center" 
                        HorizontalAlignment="Right"
                        Margin="0,0,10,0" Style="{StaticResource LargeText}"/>
 
-                <ComboBox Grid.Row="1" Grid.Column="1" Text="{Binding Path=ArrivalStationNameInput}" 
-                          Width="200px" 
-                          Height="30px" 
-                          VerticalContentAlignment="Center"
-                          IsEditable="True"
-                          HorizontalAlignment="Left" 
-                          IsTextSearchEnabled="True"
-                          IsDropDownOpen="{Binding Path=ArrivalStationsDropDownIsOpen}"
-                          ItemsSource="{Binding Path=ArrivalStationSearchResult}"
-                          SelectedItem="{Binding Path=SelectedArrivalStation}">
-                    <ComboBox.ItemTemplate>
-                        <DataTemplate DataType="models:Station">
-                            <ComboBoxItem>
-                                <Label Content="{Binding Name}"></Label>
-                            </ComboBoxItem>
-                        </DataTemplate>
-                    </ComboBox.ItemTemplate>
-                </ComboBox>
+            <StackPanel Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Stretch">
+                <TextBox
+                    Text="{Binding Path=ArrivalStationNameSearchInput, UpdateSourceTrigger=PropertyChanged}" 
+                    Height="30" VerticalContentAlignment="Center" TextWrapping="NoWrap" MaxLines="1">
+                </TextBox>
+                <Popup 
+                    Placement="Bottom"
+                    Height="Auto"
+                    IsOpen="{Binding Path=ArrivalSuggestionsListIsVisible}"
+                >
+                    <ListBox
+                        VerticalAlignment="Bottom"
+                        ItemsSource="{Binding Path=ArrivalStationSuggestions}" 
+                        SelectedItem="{Binding Path=SelectedArrivalStation, UpdateSourceTrigger=PropertyChanged}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate DataType="models:Station">
+                                <Label Content="{Binding Name}"/>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </Popup>
+            </StackPanel>
 
-                <Button Grid.Row="1" Grid.Column="2" Content="Search connections" 
+            <Button Grid.Row="1" Grid.Column="2" Content="Search connections" 
                         Style="{StaticResource RedButton}" 
                         Height="30" 
                         VerticalAlignment="Center"
                         HorizontalAlignment="Left"
                         Margin="10,0,0,0"
-                        Command="{Binding Path=SearchConnectionsCommand}" />
+                        Command="{Binding Path=SearchConnectionsCommand}" IsDefault="True" />
 
                 <StackPanel Grid.Row="0" Grid.Column="2" VerticalAlignment="Center" Orientation="Horizontal" Margin="10,0">
                     <DatePicker VerticalContentAlignment="Center" SelectedDate="{Binding SelectedDepartureDate}" />
@@ -91,6 +99,22 @@
                 </StackPanel>
             </Grid>
 
-        <DataGrid Grid.Row="1" ItemsSource="{Binding ConnectionsList}" IsReadOnly="True" Margin="10" />
+        <DataGrid Grid.Row="1" ItemsSource="{Binding ConnectionsList}" IsReadOnly="True" Margin="10" AutoGenerateColumns="False">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Departure" Binding="{Binding Path=From.Departure}" />
+                <DataGridTextColumn Header="From" Binding="{Binding Path=From.Station.Name}" />
+                <DataGridTextColumn Header="Platform" Binding="{Binding Path=From.Platform}"/>
+                <DataGridTextColumn Header="Arrival" Binding="{Binding Path=To.Arrival}" />
+                <DataGridTextColumn Header="To" Binding="{Binding Path=To.Station.Name}" />
+                <DataGridTextColumn Header="Platform" Binding="{Binding Path=To.Platform}"/>
+                <DataGridTemplateColumn>
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="Share"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
     </Grid>
 </Page>

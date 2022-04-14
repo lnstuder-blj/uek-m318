@@ -1,7 +1,6 @@
-﻿using System;
-
-namespace SwissTransport
+﻿namespace SwissTransport
 {
+    using System;
     using FluentAssertions;
     using SwissTransport.Core;
     using SwissTransport.Models;
@@ -25,6 +24,15 @@ namespace SwissTransport
         }
 
         [Fact]
+        public void LocationsLatLong()
+        {
+            // Koordinaten von Wolhusen
+            Stations stations = this.testee.GetStations(47.0598068, 8.0734028);
+
+            stations.StationList.Should().HaveCount(10);
+        }
+
+        [Fact]
         public void StationBoard()
         {
             StationBoardRoot stationBoard = this.testee.GetStationBoard("Sursee", "8502007");
@@ -43,7 +51,8 @@ namespace SwissTransport
         [Fact]
         public void ConnectionsByDate()
         {
-            Connections connections = this.testee.GetConnections("Sursee", "Luzern", DateTime.Now);
+            Connections connections = this.testee.GetConnections(
+                "Sursee", "Luzern", DateTime.Now.AddDays(2));
 
             connections.Should().NotBeNull();
         }

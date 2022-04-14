@@ -7,6 +7,8 @@
     {
         Stations GetStations(string query);
 
+        Stations GetStations(double longitude, double latitude);
+
         StationBoardRoot GetStationBoard(string station, string id);
 
         Connections GetConnections(string fromStation, string toStation);

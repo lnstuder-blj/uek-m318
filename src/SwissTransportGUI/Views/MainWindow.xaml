@@ -16,6 +16,9 @@
             <TabItem TabIndex="0" Header="Connections">
                 <Frame Source="ConnectionsView.xaml" />
             </TabItem>
+            <TabItem TabIndex="0" Header="Nearby stations">
+                <Frame Source="NearbyStationsView.xaml" />
+            </TabItem>
         </TabControl>
     </Grid>
 </Window>

@@ -19,7 +19,8 @@ namespace SwissTransportGUI.Services
             _swissTransport = swissTransport;
         }
 
-        public List<Station> PopulateSuggestions(List<Station> inputCollection, ref List<Station> suggestions)
+        public List<Station> PopulateSuggestions(
+            List<Station> inputCollection, ref List<Station> suggestions)
         {
             // Remove all displayed search results that are not in the suggestions
             inputCollection.Except(suggestions)
@@ -40,7 +41,9 @@ namespace SwissTransportGUI.Services
         {
             if (stationNameQuery.Trim().Length <= 2) return null;
 
-            List<Station> suggestions = _swissTransport.GetStations(stationNameQuery).StationList;
+            List<Station> suggestions = _swissTransport.GetStations(
+                stationNameQuery).StationList;
+
             return suggestions;
         }
     }

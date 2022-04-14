@@ -17,8 +17,4 @@
     <ProjectReference Include="..\SwissTransport\SwissTransport.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Events\EventArgs\" />
-  </ItemGroup>
-
 </Project>

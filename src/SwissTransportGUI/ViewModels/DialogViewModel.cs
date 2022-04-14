@@ -19,7 +19,7 @@ namespace SwissTransportGUI.ViewModels
             set => SetProperty(ref _title, value);
         }
 
-        private string _message;
+        private string _message = string.Empty;
         public string Message
         {
             get => _message;

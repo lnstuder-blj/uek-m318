@@ -22,6 +22,12 @@
             return this.GetObject<Stations>(uri);
         }
 
+        public Stations GetStations(double longitude, double latitude)
+        {
+            var uri = new Uri($"{WebApiHost}locations?y={longitude}&x={latitude}&type=station");
+            return this.GetObject<Stations>(uri);
+        }
+
         public StationBoardRoot GetStationBoard(string station, string id)
         {
             if (string.IsNullOrEmpty(station))

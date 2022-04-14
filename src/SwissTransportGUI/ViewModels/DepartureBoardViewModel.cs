@@ -14,6 +14,7 @@ using Prism.Commands;
 using Prism.Mvvm;
 using SwissTransport.Core;
 using SwissTransport.Models;
+using SwissTransportGUI.Models;
 using SwissTransportGUI.Services;
 using SwissTransportGUI.Services.Interfaces;
 
@@ -23,9 +24,9 @@ namespace SwissTransportGUI.ViewModels
     {
         public ObservableCollection<Station> StationSuggestions { get; }
         
-        public ObservableCollection<StationBoard> DeparturesList { get; }
+        public ObservableCollection<Departure> DeparturesList { get; }
 
-        private string _stationNameSearchInput;
+        private string _stationNameSearchInput = string.Empty;
         public string StationNameSearchInput
         {
             get => _stationNameSearchInput;
@@ -62,14 +63,16 @@ namespace SwissTransportGUI.ViewModels
         private readonly ITransport _swissTransport;
         private readonly IStationAutoComplete _stationAutoComplete;
 
-        public DepartureBoardViewModel(ITransport swissTransport, IStationAutoComplete stationAutoComplete)
+        public DepartureBoardViewModel(
+            ITransport swissTransport, 
+            IStationAutoComplete stationAutoComplete)
         {
             _swissTransport = swissTransport;
             _stationAutoComplete = stationAutoComplete;
 
             StationSuggestions = new ObservableCollection<Station>();
             StationNameSearchInput = string.Empty;
-            DeparturesList = new ObservableCollection<StationBoard>();
+            DeparturesList = new ObservableCollection<Departure>();
             SearchButtonIsEnabled = false;
             SuggestionsListIsVisible = true;
 
@@ -110,8 +113,25 @@ namespace SwissTransportGUI.ViewModels
         {
             DeparturesList.Clear();
             if (SelectedStation == null) return;
-            List<StationBoard> stationBoards = _swissTransport.GetStationBoard(SelectedStation.Name, SelectedStation.Id).Entries;
-            stationBoards.Take(10).ToList().ForEach(board => DeparturesList.Add(board));
+
+            List<StationBoard> stationBoards = _swissTransport.GetStationBoard(SelectedStation.Name,
+                SelectedStation.Id).Entries.Take(4).ToList();
+
+            foreach (StationBoard stationBoard in stationBoards)
+            {
+                Connection? connection = _swissTransport.GetConnections(
+                    SelectedStation.Name, stationBoard.To, stationBoard.Stop.Departure).ConnectionList
+                    .FirstOrDefault();
+
+                if (connection == null) return;
+
+                string trainName = stationBoard.Category + stationBoard.Number;
+
+                Departure connectionDeparture = new Departure(trainName, stationBoard.To, stationBoard.Stop.Departure,
+                    connection.From.Platform, connection.From.Delay ?? 0);
+
+                DeparturesList.Add(connectionDeparture);
+            }
         }
     }
 }

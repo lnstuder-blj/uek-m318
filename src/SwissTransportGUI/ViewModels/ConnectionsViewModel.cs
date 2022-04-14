@@ -2,12 +2,9 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
 using Prism.Commands;
 using Prism.Mvvm;
-using Prism.Services.Dialogs;
 using SwissTransport.Core;
 using SwissTransport.Models;
 using SwissTransportGUI.Services.Interfaces;
@@ -16,46 +13,50 @@ namespace SwissTransportGUI.ViewModels
 {
     internal class ConnectionsViewModel : BindableBase
     {
-        private string _departureStationNameInput;
-        public string DepartureStationNameInput
+        private string _departureStationNameSearchInput = string.Empty;
+        public string DepartureStationNameSearchInput
         {
-            get => _departureStationNameInput;
-            set => SetProperty(ref _departureStationNameInput, value, OnDepartureStationNameInputChanged);
+            get => _departureStationNameSearchInput;
+            set => SetProperty(ref _departureStationNameSearchInput, value, 
+                OnDepartureStationNameInputChanged);
         }
 
-        private string _arrivalStationNameInput;
-        public string ArrivalStationNameInput
+        private string _arrivalStationNameSearchInput = string.Empty;
+        public string ArrivalStationNameSearchInput
         {
-            get => _arrivalStationNameInput;
-            set => SetProperty(ref _arrivalStationNameInput, value, OnArrivalStationNameInputChanged);
+            get => _arrivalStationNameSearchInput;
+            set => SetProperty(ref _arrivalStationNameSearchInput, value, 
+                OnArrivalStationNameInputChanged);
         }
 
-        private bool _departureStationsDropDownIsOpen;
-        public bool DepartureStationsDropDownIsOpen
+        private bool _departureSuggestionsListIsVisible;
+        public bool DepartureSuggestionsListIsVisible
         {
-            get => _departureStationsDropDownIsOpen;
-            set => SetProperty(ref _departureStationsDropDownIsOpen, value);
+            get => _departureSuggestionsListIsVisible;
+            set => SetProperty(ref _departureSuggestionsListIsVisible, value);
         }
 
-        private bool _arrivalStationsDropDownIsOpen;
-        public bool ArrivalStationsDropDownIsOpen
+        private bool _arrivalSuggestionsListIsVisible;
+        public bool ArrivalSuggestionsListIsVisible
         {
-            get => _arrivalStationsDropDownIsOpen;
-            set => SetProperty(ref _arrivalStationsDropDownIsOpen, value);
+            get => _arrivalSuggestionsListIsVisible;
+            set => SetProperty(ref _arrivalSuggestionsListIsVisible, value);
         }
 
         private Station? _selectedDepartureStation;
         public Station? SelectedDepartureStation
         {
             get => _selectedDepartureStation;
-            set => SetProperty(ref _selectedDepartureStation, value);
+            set => SetProperty(ref _selectedDepartureStation, 
+                value, OnSelectedDepartureStationChanged);
         }
 
         private Station? _selectedArrivalStation;
         public Station? SelectedArrivalStation
         {
             get => _selectedArrivalStation;
-            set => SetProperty(ref _selectedArrivalStation, value);
+            set => SetProperty(ref _selectedArrivalStation, 
+                value, OnSelectedArrivalStationChanged);
         }
 
         private bool _applyDateFilter;
@@ -65,84 +66,109 @@ namespace SwissTransportGUI.ViewModels
             set => SetProperty(ref _applyDateFilter, value);
         }
 
-        private DateTime? _selectedDepartureDate;
-        public DateTime? SelectedDepartureDate
+        private DateTime _selectedDepartureDate = DateTime.Now;
+        public DateTime SelectedDepartureDate
         {
             get => _selectedDepartureDate;
             set => SetProperty(ref _selectedDepartureDate, value);
         }
         
         public ObservableCollection<Connection> ConnectionsList { get; }
-        public ObservableCollection<Station> DepartureStationSearchResult { get; }
-        public ObservableCollection<Station> ArrivalStationSearchResult { get; }
+        public ObservableCollection<Station> DepartureStationSuggestions { get; }
+        public ObservableCollection<Station> ArrivalStationSuggestions { get; }
 
         public ICommand SearchConnectionsCommand { get; }
 
-        private ITransport _swissTransport;
-        private IStationAutoComplete _stationAutoComplete;
-        private IDialogService _dialogService;
+        private readonly ITransport _swissTransport;
+        private readonly IStationAutoComplete _stationAutoComplete;
 
-        public ConnectionsViewModel(ITransport swissTransport, IStationAutoComplete stationAutoComplete, IDialogService dialogService)
+        public ConnectionsViewModel(
+            ITransport swissTransport, 
+            IStationAutoComplete stationAutoComplete)
         {
             _swissTransport = swissTransport;
             _stationAutoComplete = stationAutoComplete;
-            _dialogService = dialogService;
 
             SearchConnectionsCommand = new DelegateCommand(OnSearchConnections);
 
             ConnectionsList = new ObservableCollection<Connection>();
-            DepartureStationSearchResult = new ObservableCollection<Station>();
-            ArrivalStationSearchResult = new ObservableCollection<Station>();
-
-            DepartureStationNameInput = string.Empty;
-            ArrivalStationNameInput = string.Empty;
+            DepartureStationSuggestions = new ObservableCollection<Station>();
+            ArrivalStationSuggestions = new ObservableCollection<Station>();
         }
 
         private void OnDepartureStationNameInputChanged()
         {
-            if (DepartureStationNameInput == SelectedDepartureStation?.Name) return;
+            if (DepartureStationNameSearchInput == SelectedDepartureStation?.Name) return;
 
-            DepartureStationSearchResult.Clear();
+            DepartureStationSuggestions.Clear();
 
-            List<Station>? suggestions = _stationAutoComplete.GetSuggestions(DepartureStationNameInput);
+            List<Station>? suggestions = _stationAutoComplete.GetSuggestions(
+                DepartureStationNameSearchInput);
             if (suggestions == null) return;
 
             List<Station> filteredSuggestions = _stationAutoComplete
-                .PopulateSuggestions(DepartureStationSearchResult.ToList(), ref suggestions).ToList();
+                .PopulateSuggestions(DepartureStationSuggestions.ToList(), ref suggestions)
+                .ToList();
 
-            DepartureStationSearchResult.AddRange(filteredSuggestions);
+            DepartureStationSuggestions.AddRange(filteredSuggestions);
 
-            DepartureStationsDropDownIsOpen = true;
+            DepartureSuggestionsListIsVisible = true;
+        }
+
+        private void OnSelectedDepartureStationChanged()
+        {
+            if (SelectedDepartureStation != null)
+            {
+                DepartureSuggestionsListIsVisible = false;
+                DepartureStationNameSearchInput = SelectedDepartureStation.Name;
+            }
+        }
+
+        private void OnSelectedArrivalStationChanged()
+        {
+            if (SelectedArrivalStation != null)
+            {
+                ArrivalSuggestionsListIsVisible = false;
+                ArrivalStationNameSearchInput = SelectedArrivalStation.Name;
+            }
         }
 
         private void OnArrivalStationNameInputChanged()
         {
-            if (ArrivalStationNameInput == SelectedArrivalStation?.Name) return;
+            if (ArrivalStationNameSearchInput == SelectedArrivalStation?.Name) return;
 
-            ArrivalStationSearchResult.Clear();
+            ArrivalStationSuggestions.Clear();
 
-            List<Station>? suggestions = _stationAutoComplete.GetSuggestions(ArrivalStationNameInput);
+            List<Station>? suggestions = _stationAutoComplete.GetSuggestions(
+                ArrivalStationNameSearchInput);
             if (suggestions == null) return;
 
             List<Station> filteredSuggestions = _stationAutoComplete
-                .PopulateSuggestions(ArrivalStationSearchResult.ToList(), ref suggestions).ToList();
+                .PopulateSuggestions(ArrivalStationSuggestions.ToList(), ref suggestions)
+                .ToList();
 
-            ArrivalStationSearchResult.AddRange(filteredSuggestions);
+            ArrivalStationSuggestions.AddRange(filteredSuggestions);
 
-            ArrivalStationsDropDownIsOpen = true;
+            ArrivalSuggestionsListIsVisible = true;
         }
-        
+
         private void OnSearchConnections()
         {
-            if (SelectedArrivalStation == null 
-                || SelectedDepartureStation == null 
-                || SelectedDepartureDate == null) return;
+            ConnectionsList.Clear();
 
-            DateTime departureDate = SelectedDepartureDate.HasValue && ApplyDateFilter 
-                ? SelectedDepartureDate.Value : DateTime.Now;
+            if (SelectedArrivalStation == null 
+                || SelectedDepartureStation == null) return;
+
+            DateTime departureDate = ApplyDateFilter
+                ? SelectedDepartureDate
+                : DateTime.Now;
 
             List<Connection> connections = _swissTransport
-                .GetConnections(SelectedDepartureStation.Name, SelectedArrivalStation.Name, departureDate).ConnectionList.Take(10)
+                .GetConnections(
+                    SelectedDepartureStation.Name,
+                    SelectedArrivalStation.Name, 
+                    departureDate).ConnectionList
+                .Take(4)
                 .ToList();
 
             ConnectionsList.AddRange(connections);
