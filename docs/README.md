@@ -96,7 +96,12 @@ Es sind keine Bugs bekannt.
 
 #### Compiler Warnungen
 
-Es sind keine Compiler Warnungen vorhanden.
+| Code   | Warnung                                                      | Bemerkung                                                    |
+| ------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| CS8618 | Non-Nullable-Eigenschaft "City" muss beim Beenden des Konstruktors einen Wert ungleich NULL enthalten. Erwägen Sie eine Deklaration von "Eigenschaft" als Nullable. | Das Model hat keinen Konstruktor. Visual Studio weiss nicht, dass dieses Feld nie NULL ist. |
+| CS8618 | Non-Nullable-Eigenschaft "Country" muss beim Beenden des Konstruktors einen Wert ungleich NULL enthalten. Erwägen Sie eine Deklaration von "Eigenschaft" als Nullable. | Das Model hat keinen Konstruktor. Visual Studio weiss nicht, dass dieses Feld nie NULL ist. |
+
+
 
 ## Tests
 
@@ -168,9 +173,4 @@ Die folgende Tabelle protokolliert die Systemtests, durchgeführt durch eine Tes
 
 ## Installationseinleitung
 
-### Installation
-
-
-
-### Deinstallation
-
+Die Installation und Deinstallation läuft über den Installer in der Release Seite auf Github.
